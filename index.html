@@ -1,28 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gelato API and Contract Interaction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        div {
+            padding: 20px;
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            background-color: #fff;
+            border-radius: 10px;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #3498db;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
 </head>
-<body>
 
-<!-- Display the result of the API call -->
-<div>
-    <button onclick="getAPIResult()">Get Remaining Balance</button>
-    <p>Remaining Balance: <span id="balance">-</span> USDC</p>
-</div>
+<body onload="getAPIResult()">
 
-<!-- Call a contract using MetaMask -->
-<div>
-    <h2>Deposit to Contract</h2>
-    <input type="text" id="sponsorAddress" value="0x3D221E6dfB87ff4dE803CDeCDB75B0448cc86526" readonly>
-    <input type="text" id="tokenAddress" value="0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174" readonly>
-    <input type="number" id="amount" placeholder="Amount">
-    <button onclick="depositToken()">Deposit</button>
-</div>
+    <body onload="getAPIResult()">
 
-<script>
+        <!-- Display the result of the API call -->
+        <div>
+            <p>Remaining Balance: <span id="balance">-</span> USDC</p>
+        </div>
+    
+        <!-- Button to detect MetaMask -->
+        <div>
+            <button onclick="initializeMetaMask()">Detect MetaMask</button>
+            <p id="metamaskStatus">MetaMask status: Not detected</p>
+        </div>
+    <!-- Call a contract using MetaMask -->
+    <div>
+        <h2>Deposit to Contract</h2>
+        <!-- Hidden sponsor and token addresses -->
+        <input type="hidden" id="sponsorAddress" value="0x3D221E6dfB87ff4dE803CDeCDB75B0448cc86526">
+        <input type="hidden" id="tokenAddress" value="0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174">
+        <input type="number" id="amount" placeholder="Amount">
+        <button onclick="depositToken()">Deposit</button>
+    </div>
+
+    <script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
+    <script>
+       const MMSDK = new MetaMaskSDK.MetaMaskSDK()
+    // Because init process of the MetaMaskSDK is async.
+    setTimeout(() => {
+        const ethereum = MMSDK.getProvider() // You can also access via window.ethereum
+
+        ethereum.request({ method: 'eth_requestAccounts' })
+    }, 0)
     const apiEndpoint = "https://api.gelato.digital/1balance/networks/mainnets/sponsors/0x3D221E6dfB87ff4dE803CDeCDB75B0448cc86526";
 
     async function getAPIResult() {
