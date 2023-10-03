@@ -117,12 +117,6 @@
         }
     }
 
-    // Initialize web3 if MetaMask is installed
-    if (typeof ethereum !== 'undefined') {
-        ethereum.enable().then((accounts) => {
-            window.ethereum = new Web3(ethereum);
-        });
-    }
 
 </script>
 
