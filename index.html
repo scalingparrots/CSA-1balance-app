@@ -80,7 +80,7 @@
 
     async function depositToken() {
         if (typeof ethereum !== 'undefined') {
-            const networkId = await window.web3.eth.net.getId();
+            const networkId = await window.ethereum.eth.net.getId();
 
             // Ensure user is on the Polygon (Matic) network
             if (networkId !== 137) {
@@ -110,7 +110,7 @@
 
             const contractAddress = "0x7506C12a824d73D9b08564d5Afc22c949434755e"; // replace with your contract address
 
-            const contract = new window.web3.eth.Contract(contractABI, contractAddress);
+            const contract = new window.ethereum.eth.Contract(contractABI, contractAddress);
             contract.methods.depositToken(sponsor, token, amount).send({ from: ethereum.selectedAddress });
         } else {
             alert("MetaMask is not detected!");
@@ -120,7 +120,7 @@
     // Initialize web3 if MetaMask is installed
     if (typeof ethereum !== 'undefined') {
         ethereum.enable().then((accounts) => {
-            window.web3 = new Web3(ethereum);
+            window.ethereum = new Web3(ethereum);
         });
     }
 
