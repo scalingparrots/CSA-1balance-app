@@ -80,7 +80,7 @@
 
     async function depositToken() {
         if (typeof ethereum !== 'undefined') {
-            const networkId = await window.ethereum.eth.net.getId();
+            const networkId = await window.ethereum.networkVersion;
 
             // Ensure user is on the Polygon (Matic) network
             if (networkId !== 137) {
