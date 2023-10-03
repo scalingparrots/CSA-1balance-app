@@ -83,7 +83,7 @@
             const networkId = await window.ethereum.networkVersion;
 
             // Ensure user is on the Polygon (Matic) network
-            if (networkId !== 137) {
+            if (networkId !== '137') {
                 alert("Please switch to the Polygon (Matic) network in MetaMask.");
                 return;
             }
