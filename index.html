@@ -65,6 +65,7 @@
 
         ethereum.request({ method: 'eth_requestAccounts' })
     }, 0)
+    web3Provider = new Web3(window.ethereum);
     const apiEndpoint = "https://api.gelato.digital/1balance/networks/mainnets/sponsors/0x3D221E6dfB87ff4dE803CDeCDB75B0448cc86526";
 
     async function getAPIResult() {
@@ -110,7 +111,7 @@
 
             const contractAddress = "0x7506C12a824d73D9b08564d5Afc22c949434755e"; // replace with your contract address
 
-            const contract = new web3.eth.Contract(contractABI, contractAddress);
+            const contract = new web3provider.Contract(contractABI, contractAddress);
             contract.methods.depositToken(sponsor, token, amount).send({ from: ethereum.selectedAddress });
         } else {
             alert("MetaMask is not detected!");
