@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gelato API and Contract Interaction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        div {
+            padding: 20px;
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            background-color: #fff;
+            border-radius: 10px;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #3498db;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+
+<body onload="getAPIResult()">
+
+    <body onload="getAPIResult()">
+
+        <!-- Display the result of the API call -->
+        <div>
+            <p>Remaining Balance: <span id="balance">-</span> USDC</p>
+        </div>
+    
+        <!-- Button to detect MetaMask -->
+        <div>
+            <button onclick="initializeMetaMask()">Detect MetaMask</button>
+            <p id="metamaskStatus">MetaMask status: Not detected</p>
+        </div>
+    <!-- Call a contract using MetaMask -->
+    <div>
+        <h2>Deposit to Contract</h2>
+        <!-- Hidden sponsor and token addresses -->
+        <input type="hidden" id="sponsorAddress" value="0x3D221E6dfB87ff4dE803CDeCDB75B0448cc86526">
+        <input type="hidden" id="tokenAddress" value="0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174">
+        <input type="number" id="amount" placeholder="Amount">
+        <button onclick="depositToken()">Deposit</button>
+    </div>
+    <script>
+       async function initializeMetaMask() {
+    if (typeof window.ethereum !== 'undefined') {
+        window.web3 = new Web3(window.ethereum);
+        try {
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            document.getElementById('metamaskStatus').textContent = "MetaMask status: Detected and enabled";
+        } catch (err) {
+            document.getElementById('metamaskStatus').textContent = "MetaMask status: Detected but user denied access";
+        }
+    } else {
+        document.getElementById('metamaskStatus').textContent = "MetaMask status: Not detected";
+        alert("MetaMask is not detected! Even though you have it installed, make sure it's unlocked and try refreshing the page or restarting your browser.");
+    }
+}
+    const apiEndpoint = "https://api.gelato.digital/1balance/networks/mainnets/sponsors/0x3D221E6dfB87ff4dE803CDeCDB75B0448cc86526";
+
+    async function getAPIResult() {
+        try {
+            let response = await fetch(apiEndpoint);
+            let data = await response.json();
+            let remainingBalance = data.sponsor.mainBalance.remainingBalance / Math.pow(10, 6); // Assuming USDC has 6 decimals
+            document.getElementById('balance').textContent = remainingBalance;
+        } catch (error) {
+            console.error("Error fetching API:", error);
+        }
+    }
+
+    async function depositToken() {
+        if (typeof ethereum !== 'undefined') {
+            const networkId = await window.web3.eth.net.getId();
+
+            // Ensure user is on the Polygon (Matic) network
+            if (networkId !== 137) {
+                alert("Please switch to the Polygon (Matic) network in MetaMask.");
+                return;
+            }
+
+            const sponsor = document.getElementById('sponsorAddress').value;
+            const token = document.getElementById('tokenAddress').value;
+            const amount = document.getElementById('amount').value;
+
+            const contractABI = [{
+                "name": "depositToken",
+                "type": "function",
+                "inputs": [{
+                    "name": "_sponsor",
+                    "type": "address"
+                }, {
+                    "name": "_token",
+                    "type": "address"
+                }, {
+                    "name": "_amount",
+                    "type": "uint256"
+                }],
+                "outputs": []
+            }];
+
+            const contractAddress = "0x7506C12a824d73D9b08564d5Afc22c949434755e"; // replace with your contract address
+
+            const contract = new window.web3.eth.Contract(contractABI, contractAddress);
+            contract.methods.depositToken(sponsor, token, amount).send({ from: ethereum.selectedAddress });
+        } else {
+            alert("MetaMask is not detected!");
+        }
+    }
+
+    // Initialize web3 if MetaMask is installed
+    if (typeof ethereum !== 'undefined') {
+        ethereum.enable().then((accounts) => {
+            window.web3 = new Web3(ethereum);
+        });
+    }
+
+</script>
+
+</body>
+</html>
